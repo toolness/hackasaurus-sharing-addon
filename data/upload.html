@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<title>hi</title>
+<style>
+html, body {
+  color: white;
+  font-family: Helvetica, Arial, sans-serif;
+  margin: 0.75em;
+  font-size: 10pt;
+}
+
+h1 {
+  font-size: 10pt;
+}
+
+form input, form textarea {
+  width: 100%;
+  background: gray;
+  border: none;
+  font-family: Helvetica, Arial, sans-serif;
+  font-size: 10pt;
+  color: white;
+  padding: 0.25em;
+}
+
+form input#submit {
+  background: #ff9900;
+  color: black;
+  width: 50%;
+}
+
+form input#submit:hover {
+  background: #B2E725;
+}
+
+img#thumbnail {
+  padding-bottom: 10px;
+}
+
+img#throbber {
+  float: right;
+}
+</style>
+<h1>Share This Hack</h1>
+<img src="http://farm6.static.flickr.com/5107/5639494663_b3d7e1fe1e.jpg" id="thumbnail">
+<form>
+  <div>Title</div>
+  <div><input type="text" id="title"></input></div>
+  <br>
+  <div>Description</div>
+  <div><textarea id="desc"></textarea></div>
+  <br>
+  <div>
+    <img src="ajax-loader.gif" id="throbber" style="display: none;">
+    <input type="submit" value="Share" id="submit"></input>
+  </div>
+</form>
+<script src="jquery.min.js"></script>
+<script>
+$(window).ready(function() {
+  window.addonHandlers = {
+    onShow: function(options) {
+      $("#thumbnail").attr("src", options.url);
+    },
+    onUploadComplete: function() {
+      $("#title, #desc").val('');
+      $("#throbber").hide();
+    },
+    onUploadFailed: function(options) {
+      $("#throbber").hide();
+      $("#desc").val("An error occurred.\n\n" + options.details);
+    }
+  };
+  $(document.body).click(function(event) {
+    if (event.shiftKey)
+      location.reload();
+  });
+  $("form").submit(function() {
+    window.sendAddonEvent("onShareClicked", {
+      title: $("#title").val(),
+      description: $("#desc").val()
+    });
+    $("#throbber").show();
+    return false;
+  });
+});
+</script>
