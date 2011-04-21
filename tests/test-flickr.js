@@ -13,6 +13,24 @@ exports.testSigningWorks = function(test) {
   test.assertEqual(sig, '8ad70cd3888ce493c8dde4931f7d6bd0');
 };
 
+exports.testphotoIDtoShortURLWorks = function(test) {
+  test.assertEqual(flickr.photoIDtoShortURL(4379822687),
+                   'http://flic.kr/p/7F2JGg');
+};
+
+exports.testGetPhotoIDReturnsNull = function(test) {
+  test.assert(flickr.getPhotoID('aweg') === null);
+};
+
+exports.testGetPhotoIDReturnsNumber = function(test) {
+  var text = '<rsp stat="ok">\n' +
+             '<photoid>5639624646</photoid>' +
+             '</rsp>';
+  var id = flickr.getPhotoID(text);
+  test.assertEqual(typeof(id), 'number');
+  test.assertEqual(id, '5639624646');
+};
+
 exports.testLoadConfigWorks = function(test) {
   var cfg = flickr.loadConfig();
   ['api_key', 'secret', 'auth_token'].forEach(function(name) {
