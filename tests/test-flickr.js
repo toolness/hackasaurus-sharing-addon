@@ -12,3 +12,12 @@ exports.testSigningWorks = function(test) {
   });
   test.assertEqual(sig, '8ad70cd3888ce493c8dde4931f7d6bd0');
 };
+
+exports.testLoadConfigWorks = function(test) {
+  var cfg = flickr.loadConfig();
+  ['api_key', 'secret', 'auth_token'].forEach(function(name) {
+    test.assert(name in cfg, 'flickr-config.json should contain ' + name);
+    test.assertEqual(typeof(cfg[name]), 'string',
+                     name + ' should be a string.');
+  });
+};
