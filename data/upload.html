@@ -61,6 +61,7 @@ $(window).ready(function() {
   window.addonHandlers = {
     onShow: function(options) {
       $("#thumbnail").attr("src", options.url);
+      $("#thumbnail").css({width: "100%"});
     },
     onUploadComplete: function() {
       $("#title, #desc").val('');
