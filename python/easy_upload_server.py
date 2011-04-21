@@ -5,7 +5,7 @@ from cgi import parse_qsl
 
 import flickrapi
 
-MAX_SIZE = 500000
+MAX_SIZE = 5000000
 DATA_URI_START = 'data:image/png;base64,'
 
 def application(environ, start_response):
