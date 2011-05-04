@@ -1,0 +1,3 @@
+dev/settings_local.py
+.virtualenv
+*.egg
