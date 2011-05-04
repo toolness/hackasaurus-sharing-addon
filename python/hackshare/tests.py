@@ -2,7 +2,7 @@ import os
 
 from django.conf import settings
 from django.test import TestCase
-from django.test.client import Client
+from django.test.client import Client, RequestFactory
 from django.utils import simplejson as json
 import views
 import flickr
