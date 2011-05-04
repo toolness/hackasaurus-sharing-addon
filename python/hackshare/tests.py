@@ -13,9 +13,6 @@ path = lambda *x: os.path.join(ROOT, *x)
 SAMPLE_IMG = path('sample_data', 'test_image.png')
 SAMPLE_INDEX = path('sample_data', 'index.html')
 
-class FakeFlickr(object):
-    pass
-
 class FlickrTests(TestCase):
     def test_flickr_token_is_valid(self):
         api = flickr.get_api()
@@ -31,38 +28,44 @@ class FlickrTests(TestCase):
 
 class ApiTests(TestCase):
     def setUp(self):
-        self._oldflickr = views.flickr
-        self.flickr = FakeFlickr()
-        views.flickr = self.flickr
+        self.factory = RequestFactory()
         
     def tearDown(self):
-        views.flickr = self._oldflickr
+        pass
 
     def test_upload_returns_method_not_allowed_on_get(self):
         c = Client()
         response = c.get('/upload/')
         self.assertEqual(response.status_code, 405)
 
-    def test_upload_succeeds_when_minimal_args_are_valid(self):
-        c = Client()
+    def test_upload_returns_json_with_expected_args(self):
+        req = self.factory.post('', dict())
+        
+        def fake_upload_to_flickr(some_request):
+            self.assertTrue(some_request is req)
+            return 'fake photo id'
+        
+        response = views.upload(req,
+                                upload_to_flickr=fake_upload_to_flickr)
+        
+        self.assertEqual(response['content-type'], 'application/json')
+        obj = json.loads(response.content)
+        self.assertEqual(obj['photo_id'], 'fake photo id')
+
+    def test_upload_to_flickr_works(self):
+        req = self.factory.post('', dict(screenshot=open(SAMPLE_IMG, 'rb')))
+
+        info = {}
 
         def fake_upload(filename, **kwargs):
-            self.assertFalse(hasattr(self.flickr, 'filename'))
+            self.assertTrue('filename' not in info)
+            info['filename'] = filename
             self.assertTrue(os.path.isfile(filename))
             self.assertEqual(open(SAMPLE_IMG, 'rb').read(),
                              open(filename, 'rb').read())
-            self.flickr.filename = filename
             return 'fake photo id'
 
-        self.flickr.upload = fake_upload
+        photo_id = views.upload_to_flickr(req, upload=fake_upload)
 
-        response = c.post('/upload/', dict(
-            screenshot=open(SAMPLE_IMG, 'rb'),
-            auth_token=settings.UPLOAD_AUTH_TOKEN,
-            #index_html=open(SAMPLE_INDEX, 'rb'),
-            #additional_file_count='0'
-        ))
-        self.assertEqual(response['content-type'], 'application/json')
-        self.assertFalse(os.path.exists(self.flickr.filename))
-        obj = json.loads(response.content)
-        self.assertEqual(obj['photo_id'], 'fake photo id')
+        self.assertEqual(photo_id, 'fake photo id') 
+        self.assertFalse(os.path.exists(info['filename']))
