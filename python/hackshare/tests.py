@@ -1,4 +1,6 @@
 import os
+import tempfile
+import distutils.dir_util
 
 from django.conf import settings
 from django.test import TestCase
@@ -6,7 +8,9 @@ from django.test.client import Client, RequestFactory
 from django.utils import simplejson as json
 import views
 import flickr
+import statichosting
 
+# These take a long time, so they're disabled by default.
 RUN_FLICKR_API_VERIFICATION_TESTS = False
 
 ROOT = os.path.abspath(os.path.dirname(__file__))
@@ -39,6 +43,37 @@ def test_clean_upload_params_works():
     '''
     
     pass
+
+class LocalFileStaticHostingTests(TestCase):
+    def setUp(self):
+        self.dir = tempfile.mkdtemp()
+        
+    def tearDown(self):
+        distutils.dir_util.remove_tree(self.dir)
+
+    def test_local_file_backend(self):
+        tempdir = self.dir
+        backend = statichosting.LocalFileBackend(root=tempdir,
+                                                 url='http://foo.com/')
+        storage = statichosting.Storage(backend)
+        factory = RequestFactory()
+        req = factory.post('', dict(
+            index_file=open(SAMPLE_INDEX, 'rb'),
+            index_support_files='1',
+            index_support_file_0=open(SAMPLE_IMG, 'rb')
+            ))
+        photo_id = '53235'
+        url = storage.process(photo_id, req)
+
+        self.assertEqual(url, 'http://foo.com/%s/' % photo_id)
+
+        indexpath = os.path.join(tempdir, photo_id, 'index.html')
+        supportpath = os.path.join(tempdir, photo_id, 'files',
+                                   'test_image.png')
+        self.assertEqual(open(indexpath, 'rb').read(),
+                         open(SAMPLE_INDEX, 'rb').read())
+        self.assertEqual(open(supportpath, 'rb').read(),
+                         open(SAMPLE_IMG, 'rb').read())
 
 class FlickrTests(TestCase):
     if RUN_FLICKR_API_VERIFICATION_TESTS:
