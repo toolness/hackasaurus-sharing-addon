@@ -50,5 +50,6 @@ def upload(req, upload_to_flickr=upload_to_flickr):
     photo_id = upload_to_flickr(req)
 
     return json_response(
-        photo_id=photo_id
+        photo_id=photo_id,
+        short_url=flickr.shorturl(photo_id)
         )

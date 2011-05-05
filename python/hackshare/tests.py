@@ -55,14 +55,15 @@ class ApiTests(TestCase):
         
         def fake_upload_to_flickr(some_request):
             self.assertTrue(some_request is req)
-            return 'fake photo id'
+            return '5688591650'
         
         response = views.upload(req,
                                 upload_to_flickr=fake_upload_to_flickr)
         
         self.assertEqual(response['content-type'], 'application/json')
         obj = json.loads(response.content)
-        self.assertEqual(obj['photo_id'], 'fake photo id')
+        self.assertEqual(obj['photo_id'], '5688591650')
+        self.assertEqual(obj['short_url'], 'http://flic.kr/p/9EFw7o')
 
     def test_upload_to_flickr_works(self):
         req = self.factory.post('', dict(screenshot=open(SAMPLE_IMG, 'rb')))
