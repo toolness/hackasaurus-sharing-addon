@@ -8,9 +8,15 @@ from django.utils import simplejson as json
 from django.template.loader import get_template
 from django.template import Context
 import flickr
+import statichosting
 
 DEFAULT_TITLE = 'Untitled'
 DEFAULT_TAGS = 'hackasaurus hack'
+
+storage = statichosting.Storage(statichosting.LocalFileBackend(
+  root=settings.STATIC_HACKS_ROOT,
+  url=settings.STATIC_HACKS_URL
+  ))
 
 def json_response(**obj):
     return HttpResponse(json.dumps(obj), mimetype='application/json')
@@ -57,7 +63,7 @@ def upload_to_flickr(req, upload=flickr.upload):
     return photo_id
 
 # Create your views here.
-def upload(req, upload_to_flickr=upload_to_flickr):
+def upload(req, upload_to_flickr=upload_to_flickr, storage=storage):
     if req.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
 
@@ -68,8 +74,10 @@ def upload(req, upload_to_flickr=upload_to_flickr):
         return HttpResponseBadRequest()
 
     photo_id = upload_to_flickr(req)
+    static_page_url = storage.process(photo_id, req)
 
     return json_response(
         photo_id=photo_id,
+        static_page_url=static_page_url,
         short_url=flickr.shorturl(photo_id)
         )
