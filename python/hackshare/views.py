@@ -65,7 +65,6 @@ def upload_to_flickr(req, upload=flickr.upload, static_page_url=None):
 
     return photo_id
 
-# Create your views here.
 def upload(req, upload_to_flickr=upload_to_flickr, storage=storage):
     if req.method != 'POST':
         return HttpResponseNotAllowed(['POST'])
