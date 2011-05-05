@@ -15,6 +15,16 @@ DEFAULT_TAGS = 'hackasaurus hack'
 def json_response(**obj):
     return HttpResponse(json.dumps(obj), mimetype='application/json')
 
+def apply_reasonable_defaults(obj, **defaults):
+    copy = dict(obj)
+    for key in defaults:
+        if (key not in obj) or (not obj[key].strip()):
+            copy[key] = defaults[key]
+    for key in copy.keys():
+        if not copy[key].strip():
+            del copy[key]
+    return copy
+    
 def upload_to_flickr(req, upload=flickr.upload):
     fd, tempfilename = tempfile.mkstemp(suffix='.png')
     os.close(fd)
@@ -23,13 +33,16 @@ def upload_to_flickr(req, upload=flickr.upload):
         f.write(chunk)
     f.close()
 
+    opts = apply_reasonable_defaults(req.POST, title=DEFAULT_TITLE)
+    if 'source_url' in opts and not 'source_title' in opts:
+        opts['source_title'] = opts['source_url']
     desc_html = get_template('hackshare/flickr_description.html')
-    desc = desc_html.render(Context(req.POST))
+    desc = desc_html.render(Context(opts))
 
     try:
         photo_id = upload(
             filename=tempfilename,
-            title=req.POST.get('title', DEFAULT_TITLE),
+            title=opts['title'],
             description=desc,
             tags=DEFAULT_TAGS,
             content_type=2

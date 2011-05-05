@@ -13,6 +13,20 @@ path = lambda *x: os.path.join(ROOT, *x)
 SAMPLE_IMG = path('sample_data', 'test_image.png')
 SAMPLE_INDEX = path('sample_data', 'index.html')
 
+def test_apply_reasonable_defaults_works():
+    '''
+    >>> obj = dict(foo=' ', a=' ')
+    >>> new = views.apply_reasonable_defaults(obj, foo='hi', bar='there')
+    >>> new['foo']
+    'hi'
+    >>> new['bar']
+    'there'
+    >>> 'a' in new
+    False
+    '''
+    
+    pass
+
 class FlickrTests(TestCase):
     def test_flickr_token_is_valid(self):
         api = flickr.get_api()
