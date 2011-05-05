@@ -38,8 +38,20 @@ class ApiTests(TestCase):
         response = c.get('/upload/')
         self.assertEqual(response.status_code, 405)
 
-    def test_upload_returns_json_with_expected_args(self):
+    def test_upload_returns_forbidden_with_no_auth_token(self):
         req = self.factory.post('', dict())
+        response = views.upload(req)
+        self.assertEqual(response.status_code, 403)
+
+    def test_upload_returns_forbidden_with_bad_auth_token(self):
+        req = self.factory.post('', dict(auth_token='no u'))
+        response = views.upload(req)
+        self.assertEqual(response.status_code, 403)
+
+    def test_upload_returns_json_with_expected_args(self):
+        req = self.factory.post('', dict(
+            auth_token=settings.UPLOAD_AUTH_TOKEN
+            ))
         
         def fake_upload_to_flickr(some_request):
             self.assertTrue(some_request is req)
