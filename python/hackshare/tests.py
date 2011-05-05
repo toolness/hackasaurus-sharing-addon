@@ -19,6 +19,8 @@ path = lambda *x: os.path.join(ROOT, *x)
 
 SAMPLE_IMG = path('sample_data', 'test_image.png')
 SAMPLE_INDEX = path('sample_data', 'index.html')
+SAMPLE_CSS = path('sample_data', 'sample.css')
+SAMPLE_JS = path('sample_data', 'sample.js')
 
 def test_apply_reasonable_defaults_works():
     '''
@@ -60,21 +62,32 @@ class LocalFileStaticHostingTests(TestCase):
         factory = RequestFactory()
         req = factory.post('', dict(
             index_file=open(SAMPLE_INDEX, 'rb'),
-            index_support_files='1',
-            index_support_file_0=open(SAMPLE_IMG, 'rb')
+            index_support_files='3',
+            index_support_file_0=open(SAMPLE_IMG, 'rb'),
+            index_support_file_0_dir='files',
+            index_support_file_1=open(SAMPLE_CSS, 'rb'),
+            index_support_file_1_dir='files/css',
+            index_support_file_2=open(SAMPLE_JS, 'rb'),            
+            index_support_file_2_dir='files'            
             ))
         photo_id = '53235'
         url = storage.process(photo_id, req)
 
         self.assertEqual(url, 'http://foo.com/%s/' % photo_id)
 
-        indexpath = os.path.join(tempdir, photo_id, 'index.html')
-        supportpath = os.path.join(tempdir, photo_id, 'files',
-                                   'test_image.png')
+        root = os.path.join(tempdir, photo_id)
+        indexpath = os.path.join(root, 'index.html')
+        supportpath = os.path.join(root, 'files', 'test_image.png')
+        jspath = os.path.join(root, 'files', 'sample.js')        
+        csspath = os.path.join(root, 'files', 'css', 'sample.css')
         self.assertEqual(open(indexpath, 'rb').read(),
                          open(SAMPLE_INDEX, 'rb').read())
         self.assertEqual(open(supportpath, 'rb').read(),
                          open(SAMPLE_IMG, 'rb').read())
+        self.assertEqual(open(jspath, 'rb').read(),
+                         open(SAMPLE_JS, 'rb').read())
+        self.assertEqual(open(csspath, 'rb').read(),
+                         open(SAMPLE_CSS, 'rb').read())
 
 class FlickrTests(TestCase):
     if RUN_FLICKR_API_VERIFICATION_TESTS:

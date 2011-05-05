@@ -16,9 +16,12 @@ class Storage(object):
         num_files = int(req.POST.get('index_support_files', '0'))
         for i in range(num_files):
             key = 'index_support_file_%d' % i
+            dirkey = '%s_dir' % key
             if key not in req.FILES:
                 raise ValueError('support file missing: %s' % key)
-            support.append(req.FILES[key])
+            if dirkey not in req.POST:
+                raise ValueError('dir key missing: %s' % dirkey)
+            support.append((req.POST.get(dirkey), req.FILES[key]))
             
         return self.backend.store_page(photo_id, index, support)
 
@@ -43,8 +46,9 @@ class LocalFileBackend(object):
             index.write(chunk)
         index.close()
         
-        for support_file in support_files:
-            support = self._make_file([photo_id, 'files', support_file.name])
+        for dirpath, support_file in support_files:
+            fullpath = [photo_id] + dirpath.split('/') + [support_file.name]
+            support = self._make_file(fullpath)
             for chunk in support_file.chunks():
                 support.write(chunk)
             support.close()
