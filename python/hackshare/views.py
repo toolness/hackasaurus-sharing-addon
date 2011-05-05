@@ -1,5 +1,7 @@
 import os
 import tempfile
+import time
+import random
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotAllowed, \
@@ -37,7 +39,7 @@ def clean_upload_params(postdata):
         opts['source_title'] = opts['source_url']
     return opts
     
-def upload_to_flickr(req, upload=flickr.upload):
+def upload_to_flickr(req, upload=flickr.upload, static_page_url=None):
     fd, tempfilename = tempfile.mkstemp(suffix='.png')
     os.close(fd)
     f = open(tempfilename, 'wb')
@@ -46,6 +48,7 @@ def upload_to_flickr(req, upload=flickr.upload):
     f.close()
 
     opts = clean_upload_params(req.POST)
+    opts['static_page_url'] = static_page_url
     desc_html = get_template('hackshare/flickr_description.html')
     desc = desc_html.render(Context(opts))
 
@@ -73,8 +76,9 @@ def upload(req, upload_to_flickr=upload_to_flickr, storage=storage):
     if not 'screenshot' in req.FILES:
         return HttpResponseBadRequest()
 
-    photo_id = upload_to_flickr(req)
-    static_page_url = storage.process(photo_id, req)
+    randomkey = '%d-%x' % (int(time.time()), random.getrandbits(32))
+    static_page_url = storage.process(randomkey, req)
+    photo_id = upload_to_flickr(req, static_page_url=static_page_url)
 
     return json_response(
         photo_id=photo_id,

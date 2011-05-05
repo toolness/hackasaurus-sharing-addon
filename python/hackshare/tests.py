@@ -138,7 +138,8 @@ class ApiTests(TestCase):
             screenshot=open(SAMPLE_IMG, 'rb')
             ))
         
-        def fake_upload_to_flickr(some_request):
+        def fake_upload_to_flickr(some_request, static_page_url):
+            self.assertTrue(static_page_url is None)
             self.assertTrue(some_request is req)
             return '5688591650'
         

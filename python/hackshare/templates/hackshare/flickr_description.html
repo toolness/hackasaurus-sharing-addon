@@ -1,3 +1,7 @@
 {{ description }}
 
 This hack was busted on <a href="{{ source_url }}">{{ source_title }}</a> using <a href="http://hackasaurus.org">Hackasaurus</a> tools.
+
+{% if static_page_url %}
+A <a href="{{ static_page_url }}">replica of the hack</a> is available.
+{% endif %}
