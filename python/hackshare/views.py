@@ -24,6 +24,12 @@ def apply_reasonable_defaults(obj, **defaults):
         if not copy[key].strip():
             del copy[key]
     return copy
+
+def clean_upload_params(postdata):
+    opts = apply_reasonable_defaults(postdata, title=DEFAULT_TITLE)
+    if 'source_url' in opts and not 'source_title' in opts:
+        opts['source_title'] = opts['source_url']
+    return opts
     
 def upload_to_flickr(req, upload=flickr.upload):
     fd, tempfilename = tempfile.mkstemp(suffix='.png')
@@ -33,9 +39,7 @@ def upload_to_flickr(req, upload=flickr.upload):
         f.write(chunk)
     f.close()
 
-    opts = apply_reasonable_defaults(req.POST, title=DEFAULT_TITLE)
-    if 'source_url' in opts and not 'source_title' in opts:
-        opts['source_title'] = opts['source_url']
+    opts = clean_upload_params(req.POST)
     desc_html = get_template('hackshare/flickr_description.html')
     desc = desc_html.render(Context(opts))
 
