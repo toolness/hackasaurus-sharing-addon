@@ -6,6 +6,7 @@ from django.conf import settings
 from django.test import TestCase
 from django.test.client import Client, RequestFactory
 from django.utils import simplejson as json
+from django.http import QueryDict
 import views
 import flickr
 import statichosting
@@ -21,7 +22,7 @@ SAMPLE_INDEX = path('sample_data', 'index.html')
 
 def test_apply_reasonable_defaults_works():
     '''
-    >>> obj = dict(foo=' ', a=' ')
+    >>> obj = QueryDict('foo=%20&a=%20')
     >>> new = views.apply_reasonable_defaults(obj, foo='hi', bar='there')
     >>> new['foo']
     'hi'
@@ -35,11 +36,11 @@ def test_apply_reasonable_defaults_works():
 
 def test_clean_upload_params_works():
     '''
-    >>> views.clean_upload_params({})['title']
+    >>> views.clean_upload_params(QueryDict(''))['title']
     'Untitled'
-    >>> stuff = {'source_url': 'http://foo.com/'}
+    >>> stuff = QueryDict('source_url=http://foo.com/')
     >>> views.clean_upload_params(stuff)['source_title']
-    'http://foo.com/'
+    u'http://foo.com/'
     '''
     
     pass

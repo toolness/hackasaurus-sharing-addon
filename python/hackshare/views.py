@@ -22,7 +22,7 @@ def json_response(**obj):
     return HttpResponse(json.dumps(obj), mimetype='application/json')
 
 def apply_reasonable_defaults(obj, **defaults):
-    copy = dict(obj)
+    copy = dict(obj.items())
     for key in defaults:
         if (key not in obj) or (not obj[key].strip()):
             copy[key] = defaults[key]
