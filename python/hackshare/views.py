@@ -3,7 +3,12 @@ import tempfile
 
 from django.http import HttpResponse, HttpResponseNotAllowed
 from django.utils import simplejson as json
+from django.template.loader import get_template
+from django.template import Context
 import flickr
+
+DEFAULT_TITLE = 'Untitled'
+DEFAULT_TAGS = 'hackasaurus hack'
 
 def json_response(**obj):
     return HttpResponse(json.dumps(obj), mimetype='application/json')
@@ -15,12 +20,16 @@ def upload_to_flickr(req, upload=flickr.upload):
     for chunk in req.FILES['screenshot'].chunks():
         f.write(chunk)
     f.close()
-    
+
+    desc_html = get_template('hackshare/flickr_description.html')
+    desc = desc_html.render(Context(req.POST))
+
     try:
         photo_id = upload(
             filename=tempfilename,
-            title=req.POST.get('title', 'Untitled'),
-            description=req.POST.get('description', ''),
+            title=req.POST.get('title', DEFAULT_TITLE),
+            description=desc,
+            tags=DEFAULT_TAGS,
             content_type=2
             )
     finally:
