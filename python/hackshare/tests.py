@@ -48,9 +48,17 @@ class ApiTests(TestCase):
         response = views.upload(req)
         self.assertEqual(response.status_code, 403)
 
+    def test_upload_without_screenshot_returns_400(self):
+        req = self.factory.post('', dict(
+            auth_token=settings.UPLOAD_AUTH_TOKEN,
+            ))
+        response = views.upload(req)
+        self.assertEqual(response.status_code, 400)
+
     def test_upload_returns_json_with_expected_args(self):
         req = self.factory.post('', dict(
-            auth_token=settings.UPLOAD_AUTH_TOKEN
+            auth_token=settings.UPLOAD_AUTH_TOKEN,
+            screenshot=open(SAMPLE_IMG, 'rb')
             ))
         
         def fake_upload_to_flickr(some_request):

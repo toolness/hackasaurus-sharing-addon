@@ -3,7 +3,7 @@ import tempfile
 
 from django.conf import settings
 from django.http import HttpResponse, HttpResponseNotAllowed, \
-                        HttpResponseForbidden
+                        HttpResponseForbidden, HttpResponseBadRequest                        
 from django.utils import simplejson as json
 from django.template.loader import get_template
 from django.template import Context
@@ -46,6 +46,9 @@ def upload(req, upload_to_flickr=upload_to_flickr):
 
     if req.POST.get('auth_token') != settings.UPLOAD_AUTH_TOKEN:
         return HttpResponseForbidden()
+
+    if not 'screenshot' in req.FILES:
+        return HttpResponseBadRequest()
 
     photo_id = upload_to_flickr(req)
 
