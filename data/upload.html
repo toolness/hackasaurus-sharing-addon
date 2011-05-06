@@ -23,6 +23,14 @@ form input, form textarea {
   padding: 0.25em;
 }
 
+form input#replica {
+  width: inherit;
+}
+
+div#checkbox-container {
+  padding-bottom: 1em;
+}
+
 form input#submit {
   background: #ff9900;
   color: black;
@@ -50,9 +58,10 @@ img#throbber {
   <div>Description</div>
   <div><textarea id="desc"></textarea></div>
   <br>
+  <div id="checkbox-container"><input type="checkbox" id="replica"> <label for="replica">Upload Replica<label></div>
   <div>
     <img src="ajax-loader.gif" id="throbber" style="display: none;">
-    <input type="submit" value="Share" id="submit"></input>
+    <input type="submit" value="Share" id="submit">
   </div>
 </form>
 <script src="jquery.min.js"></script>
@@ -79,7 +88,8 @@ $(window).ready(function() {
   $("form").submit(function() {
     window.sendAddonEvent("onShareClicked", {
       title: $("#title").val(),
-      description: $("#desc").val()
+      description: $("#desc").val(),
+      replica: $("#replica:checked").val()
     });
     $("#throbber").show();
     return false;
