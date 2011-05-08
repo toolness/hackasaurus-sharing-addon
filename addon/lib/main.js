@@ -8,7 +8,7 @@ var panelHandlers = {};
 
 var panel = Panel({
   contentURL: data.url("upload.html"),
-  contentScriptFile: data.url("upload-content-script.js"),
+  contentScript: "window.addonPort = self.port;",
   contentScriptWhen: "start",
   width: 480,
   height: 500
