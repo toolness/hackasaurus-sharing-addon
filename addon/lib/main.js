@@ -4,8 +4,6 @@ const Panel = require("panel").Panel;
 const data = require("self").data;
 const cfg = JSON.parse(data.load('config.json'));
 
-var panelHandlers = {};
-
 var panel = Panel({
   contentURL: data.url("upload.html"),
   contentScript: "window.addonPort = self.port;",
@@ -14,15 +12,11 @@ var panel = Panel({
   height: 500
 });
 
-function sendPanelEvent(event, options) {
-  panel.port.emit("event", {event: event, options: options});
-}
-
-panel.port.on("event", function(data) {
-  if (data.event in panelHandlers) {
-    panelHandlers[data.event](data.options);
-  } else
-    console.warn("no handler defined for " + data.event);
+panel.port.on("shareClicked", function(options) {
+  if (panel.onShareClicked)
+    panel.onShareClicked(options);
+  else
+    console.log("panel.onShareClicked is not defined!");
 });
 
 var shareOnFlickrWidget = widgets.Widget({
@@ -37,12 +31,12 @@ var shareOnFlickrWidget = widgets.Widget({
     var title = tab.title;
     var url = tab.url;
 
-    sendPanelEvent("onShow", {
+    panel.port.emit("show", {
       url: screenshotCanvas.toDataURL()
     });
 
-    panelHandlers.onShareClicked = function(options) {
-      delete panelHandlers.onShareClicked;
+    panel.onShareClicked = function(options) {
+      panel.onShareClicked = null;
       var data = [
         ['auth_token', cfg.auth_token],
         ['source_title', title],
@@ -60,11 +54,11 @@ var shareOnFlickrWidget = widgets.Widget({
             if (rootSaveDir)
               rootSaveDir.remove(true);
             if (err === null) {
-              sendPanelEvent("onUploadComplete", null);
+              panel.port.emit("uploadComplete", null);
               panel.hide();
               tabs.open(response.short_url);
             } else {
-              sendPanelEvent("onUploadFailed", {
+              panel.port.emit("onUploadFailed", {
                 details: err
               });
               if (response && response.length)

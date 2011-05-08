@@ -66,38 +66,25 @@ img#throbber {
 </form>
 <script src="jquery.min.js"></script>
 <script>
-window.addonHandlers = {};
-
-window.addonPort.on("event", function(data) {
-  if (data.event in window.addonHandlers)
-    window.addonHandlers[data.event](data.options);
-});
-
-window.sendAddonEvent = function(event, options) {
-  window.addonPort.emit("event", {event: event, options: options});
-};
-
 $(window).ready(function() {
-  window.addonHandlers = {
-    onShow: function(options) {
-      $("#thumbnail").attr("src", options.url);
-      $("#thumbnail").css({width: "100%"});
-    },
-    onUploadComplete: function() {
-      $("#title, #desc").val('');
-      $("#throbber").hide();
-    },
-    onUploadFailed: function(options) {
-      $("#throbber").hide();
-      $("#desc").val("An error occurred.\n\n" + options.details);
-    }
-  };
+  addonPort.on("show", function(options) {
+    $("#thumbnail").attr("src", options.url);
+    $("#thumbnail").css({width: "100%"});
+  });
+  addonPort.on("uploadComplete", function() {
+    $("#title, #desc").val('');
+    $("#throbber").hide();
+  });
+  addonPort.on("uploadFailed", function(options) {
+    $("#throbber").hide();
+    $("#desc").val("An error occurred.\n\n" + options.details);
+  });
   $(document.body).click(function(event) {
     if (event.shiftKey)
       location.reload();
   });
   $("form").submit(function() {
-    window.sendAddonEvent("onShareClicked", {
+    addonPort.emit("shareClicked", {
       title: $("#title").val(),
       description: $("#desc").val(),
       replica: $("#replica:checked").val()
