@@ -7,7 +7,7 @@ Flickr, and optionally uploading a replica of the hacked page.
 For the add-on:
 
 * Firefox 4
-* Firefox Add-on SDK v1.0b4
+* [Add-on SDK v1.0b5][addon-sdk]
 
 For the server:
 
@@ -84,3 +84,4 @@ goggles and share your hacks.
 
   [Hackasaurus]: http://hackasaurus.org
   [webxray]: https://github.com/hackasaurus/webxray
+  [addon-sdk]: http://blog.mozilla.com/addons/2011/05/05/announcing-add-on-sdk-1-0b5/
