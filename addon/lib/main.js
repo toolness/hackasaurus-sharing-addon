@@ -4,25 +4,26 @@ const Panel = require("panel").Panel;
 const data = require("self").data;
 const cfg = JSON.parse(data.load('config.json'));
 
+var panelHandlers = {};
+
 var panel = Panel({
   contentURL: data.url("upload.html"),
   contentScriptFile: data.url("upload-content-script.js"),
   contentScriptWhen: "start",
   width: 480,
-  height: 500,
-  onMessage: function(data) {
-    if (data.event in panelHandlers) {
-      panelHandlers[data.event](data.options);
-    } else
-      console.warn("no handler defined for " + data.event);
-  }
+  height: 500
 });
 
-var panelHandlers = {};
-
 function sendPanelEvent(event, options) {
-  panel.postMessage({event: event, options: options});
+  panel.port.emit("event", {event: event, options: options});
 }
+
+panel.port.on("event", function(data) {
+  if (data.event in panelHandlers) {
+    panelHandlers[data.event](data.options);
+  } else
+    console.warn("no handler defined for " + data.event);
+});
 
 var shareOnFlickrWidget = widgets.Widget({
   id: "hackasaurus-screenshot-link",
