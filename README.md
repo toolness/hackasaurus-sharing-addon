@@ -82,6 +82,14 @@ Run `cfx run` to launch an instance of Firefox with the add-on installed. You
 should be able to click on the widgets on the add-on bar to activate the
 goggles and share your hacks.
 
+# Limitations
+
+The add-on currently uses Firefox's "Save As... Web Page, complete"
+functionality under-the-hood to save replicas of hacks. However, this browser
+feature has a number of bugs, which are tracked in [Bug 115634][]. Needless to
+say, this add-on inherits most of them, save a few select work-arounds.
+
   [Hackasaurus]: http://hackasaurus.org
   [webxray]: https://github.com/hackasaurus/webxray
   [addon-sdk]: http://blog.mozilla.com/addons/2011/05/05/announcing-add-on-sdk-1-0b5/
+  [Bug 115634]: https://bugzilla.mozilla.org/show_bug.cgi?id=115634

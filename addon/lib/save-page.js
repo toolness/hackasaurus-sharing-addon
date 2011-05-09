@@ -7,7 +7,8 @@ var ioSvc = Cc["@mozilla.org/network/io-service;1"]
             .getService(Ci.nsIIOService);
 
 // Remove all script tags in the given document and
-// all iframes within it.
+// all iframes within it. This is largely a fix for
+// Bug 115328: https://bugzilla.mozilla.org/show_bug.cgi?id=115328.
 function removeScripts(document) {
   function killScripts(document) {
     var scripts = document.querySelectorAll("script");
