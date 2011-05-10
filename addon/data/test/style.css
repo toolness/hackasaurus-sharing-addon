@@ -1,3 +1,16 @@
 html, body {
-  background: firebrick;
+  /* Example of a URL in a CSS primitive value */
+  background-image: url(test_image.png);
+}
+
+div#something {
+  /* Example of a url in a shorthand CSS value list (I think?) */
+  background: url(/images/home/download-arrow.png)  0 50% no-repeat,
+				-moz-linear-gradient(
+					center bottom,
+					rgb(167,228,44) 0%,
+					rgb(190,231,107) 50%,
+					rgb(201,235,133) 50%,
+					rgb(226,241,198) 100%
+				);
 }

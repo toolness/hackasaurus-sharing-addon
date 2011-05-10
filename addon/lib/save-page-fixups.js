@@ -1,6 +1,10 @@
 // This file contains a number of workarounds for 
 // Bug 115634: https://bugzilla.mozilla.org/show_bug.cgi?id=115634
 
+function resolveURI(base, href) {
+  return require('url').URL(href, base).toString();
+}
+
 // Remove all script tags in the given document and
 // all iframes within it. This is largely a fix for
 // Bug 115328: https://bugzilla.mozilla.org/show_bug.cgi?id=115328.
@@ -29,8 +33,10 @@ exports.unifyCSS = function unifyCSS(document) {
 
       default:
       var cssText = rule.cssText.replace(url_re, function(str, href) {
+        // TODO: We're only absolut-ifying the URL here, which means
+        // the style won't be fully locally hosted when saved.
         var resolved = resolveURI(baseURI, href);
-        return "url(" + resolved + ")";
+        return "url(\"" + resolved + "\")";
       });
       rules.push(cssText);
     }
