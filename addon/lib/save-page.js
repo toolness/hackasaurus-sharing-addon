@@ -6,29 +6,6 @@ Cu.import("resource://gre/modules/FileUtils.jsm", jsm);
 var ioSvc = Cc["@mozilla.org/network/io-service;1"]
             .getService(Ci.nsIIOService);
 
-// Remove all script tags in the given document and
-// all iframes within it. This is largely a fix for
-// Bug 115328: https://bugzilla.mozilla.org/show_bug.cgi?id=115328.
-function removeScripts(document) {
-  function killScripts(document) {
-    var scripts = document.querySelectorAll("script");
-    for (var i = 0; i < scripts.length; i++) {
-      var script = scripts[i];
-      script.parentNode.removeChild(script);
-    }
-  }
-
-  killScripts(document);
-  
-  var iframes = document.querySelectorAll("iframe");
-  for (var i = 0; i < iframes.length; i++) {
-    var iframe = iframes[i];
-    var contentDocument = iframe.contentDocument;
-    if (contentDocument)
-      killScripts(contentDocument);
-  }
-}
-
 function makeWebBrowserPersist()
 {
   const persistContractID = "@mozilla.org/embedding/browser/nsWebBrowserPersist;1";
@@ -103,7 +80,7 @@ exports.saveCurrentPage = function saveCurrentPage(formData, cb) {
   var window = activeTab.ownerDocument.defaultView;
   var browser = window.gBrowser.getBrowserForTab(activeTab);
 
-  removeScripts(browser.contentDocument);
+  require('save-page-fixups').applyAllFixups(browser.contentDocument);
 
   var url = browser.currentURI.path;
   var dir = makeUniqueTempDir("page-");

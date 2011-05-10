@@ -25,7 +25,7 @@ exports.testGetCanvas = createTabTest(function(test, done) {
 
 exports.testSavePage = createTabTest(function(test, done) {
   var formData = [];
-  var paths = ["index.html", "files", "files/style.css"];
+  var paths = ["index.html", "files", "files/test_image.png"];
   require('save-page').saveCurrentPage(formData, function(dir) {
     test.assert(dir.exists(), "root save dir must exist");
     paths.forEach(function(path) {
