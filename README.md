@@ -87,9 +87,12 @@ goggles and share your hacks.
 The add-on currently uses Firefox's "Save As... Web Page, complete"
 functionality under-the-hood to save replicas of hacks. However, this browser
 feature has a number of bugs, which are tracked in [Bug 115634][]. Needless to
-say, this add-on inherits most of them, save a few select work-arounds.
+say, this add-on inherits most of them, save a few select work-arounds. In the
+long-term, it may be more useful to borrow code and/or ideas from the
+[WebPageDump][] project.
 
   [Hackasaurus]: http://hackasaurus.org
   [webxray]: https://github.com/hackasaurus/webxray
   [addon-sdk]: http://blog.mozilla.com/addons/2011/05/05/announcing-add-on-sdk-1-0b5/
   [Bug 115634]: https://bugzilla.mozilla.org/show_bug.cgi?id=115634
+  [WebPageDump]: http://www.dbai.tuwien.ac.at/user/pollak/webpagedump/index.html
